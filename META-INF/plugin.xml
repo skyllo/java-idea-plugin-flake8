@@ -1,0 +1,25 @@
+<idea-plugin version="1">
+    <id>com.skyllo.idea.plugin.flake8</id>
+    <name>Python Flake8</name>
+    <version>@version@</version>
+    <vendor email="skyllo.dev@gmail.com">skyllo (Nick)</vendor>
+
+    <description><![CDATA[
+      <p>Highlights Python flake8 issues in code (currently only import order).</p>
+      <p>Requires 'flake8' and 'flake8-import-order' to be installed.</p>
+    ]]></description>
+
+    <change-notes><![CDATA[
+      <p>Initial release</p>
+    ]]>
+    </change-notes>
+
+    <depends>com.intellij.modules.lang</depends>
+    <depends>com.intellij.modules.python</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <externalAnnotator language="Python"
+                           implementationClass="com.skyllo.idea.plugin.flake8.Flake8Annotator"/>
+    </extensions>
+
+</idea-plugin>

@@ -1,0 +1,100 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
+apply plugin: 'java'
+apply plugin: 'idea'
+
+version = '0.1'
+
+// thanks to https://github.com/dhleong/intellivim/blob/master/build.gradle for reference
+def ideaPlatformVersion = '14.1.3'
+def ideaPlatformZip = "ideaIC-${ideaPlatformVersion}.tar.gz"
+def ideaPlatformUrl = "http://download.jetbrains.com/idea/${ideaPlatformZip}"
+def ideaPlatformDir = "${projectDir}/intellij-platform"
+def ideaPlatformLibsDir = "${ideaPlatformDir}/lib"
+
+task preparePlatformDependency {
+    def platformDir = new File(ideaPlatformDir)
+    if (platformDir.exists() && platformDir.listFiles().length > 1) {
+        println "IDEA platform already setup"
+    } else {
+        println "Downloading IDEA platform"
+        platformDir.mkdirs()
+        ant.get(src: ideaPlatformUrl, dest: platformDir, skipexisting: 'true')
+
+        println "Extracting IDEA platform"
+        ant.untar(src: "${platformDir}/${ideaPlatformZip}", dest: platformDir, compression: "gzip", overwrite: false)
+    }
+
+    println "Locating IDEA platform libs directory"
+    def unzipDir = files(platformDir.listFiles()).filter {
+        it.isDirectory()
+    }
+
+    ideaPlatformDir = unzipDir.getSingleFile().getAbsolutePath()
+    ideaPlatformLibsDir = new File(ideaPlatformDir, "lib").getAbsolutePath()
+    println "Using IDEA platform libs directory: " + ideaPlatformLibsDir
+}
+
+tasks.withType(JavaCompile) {
+    sourceCompatibility = '1.6'
+    targetCompatibility = '1.6'
+}
+
+configurations {
+    provided
+}
+
+dependencies {
+    provided fileTree(dir: ideaPlatformLibsDir, include: '*.jar')
+}
+
+sourceSets {
+    main {
+        compileClasspath += configurations.provided
+        java {
+            srcDirs "src"
+        }
+    }
+}
+
+idea.project.ipr {
+    beforeMerged { project ->
+        project.modulePaths.clear()
+    }
+}
+
+idea.module.iml {
+    withXml {
+        it.node.@type = "PLUGIN_MODULE"
+    }
+}
+
+task setup {
+    dependsOn ideaModule, ideaProject
+    doLast {
+        copy {
+            from '.'
+            into '.idea/'
+            include '*.ipr'
+            rename { "modules.xml" }
+        }
+        project.delete "${project.name}.ipr"
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.4'
+}
+
+jar {
+    into('META-INF') {
+        from "${projectDir}/META-INF"
+        from "${projectDir}/LICENSE"
+        filter ReplaceTokens, tokens: [
+                "version": version
+        ]
+    }
+    version version
+}
+
+compileJava.dependsOn preparePlatformDependency
