@@ -1,5 +1,8 @@
 This plugin for IntelliJ/PyCharm executes [flake8](https://gitlab.com/pycqa/flake8) and parses the results in order to highlight issues in Python code.
 
+## Screenshot
+![screenshot](screenshot.png)
+
 ## Requirements
 * [Python](https://www.python.org/)
 * [pip](https://pypi.python.org/pypi/pip)
