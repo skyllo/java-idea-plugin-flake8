@@ -1,4 +1,4 @@
-This plugin for IntelliJ/PyCharm executes the [flake8](https://gitlab.com/pycqa/flake8) process and parses the results in order to highlight issues in Python code.
+This plugin for IntelliJ/PyCharm executes [flake8](https://gitlab.com/pycqa/flake8) and parses the results in order to highlight issues in Python code.
 
 ## Requirements
 * [Python](https://www.python.org/)
