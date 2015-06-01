@@ -129,8 +129,7 @@ public class Flake8Annotator extends ExternalAnnotator<PsiFile, List<Flake8Annot
             int startOffset = document.getLineStartOffset(issue.lineNumber - 1);
             int endOffset = document.getLineEndOffset(issue.lineNumber - 1);
             TextRange textRange = new TextRange(startOffset, endOffset);
-            Annotation annotation = holder.createErrorAnnotation(textRange, issue.errorMessage);
-            annotation.setHighlightType(ProblemHighlightType.GENERIC_ERROR_OR_WARNING);
+            holder.createErrorAnnotation(textRange, issue.errorMessage);
         }
 
         super.apply(file, issues, holder);
